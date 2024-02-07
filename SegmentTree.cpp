@@ -1,53 +1,83 @@
-
 //普通线段树
-int n, m;
-ll a[maxn];
-ll sum[maxn << 2], lazy[maxn << 2];
-void push_up(int p) {
-    sum[p] = sum[p << 1] + sum[p << 1 | 1];
+struct Info {
+    Info() {}
+    Info operator+(const Info &t) const {
+        Info i = *this;
+        return i;
+    }
+};
+
+struct Tag {
+    Tag() {}
+};
+
+void apply(Info &p, Tag &tag, const Tag &val) {
 }
-void push_down(int p, int l, int r) {
-    if (lazy[p]) {
+
+struct SegTree {
+    vector<Info> node;
+    vector<Tag> tag;
+    SegTree(const vector<Info> &vec) {
+        int n = vec.size();
+        node.assign((n << 2) + 1, Info());
+        tag.assign((n << 2) + 1, Tag());
+        auto build = [&](auto self, int p, int l, int r) -> void {
+            if (l == r) {
+                node[p] = vec[l - 1];
+                return ;
+            }
+            int mid = l + r >> 1;
+            self(self, p << 1, l, mid);
+            self(self, p << 1 | 1, mid + 1, r);
+            node[p] = node[p << 1] + node[p << 1 | 1];
+        };
+        build(build, 1, 1, n);
+    }
+    void push(int p) {
+        apply(node[p << 1], tag[p << 1], tag[p]);
+        apply(node[p << 1 | 1], tag[p << 1 | 1], tag[p]);
+        tag[p] = Tag();
+    }
+    void upd(int p, int l, int r, int ql, int qr, const Tag &val) {
+        if (ql <= l && r <= qr) {
+            apply(node[p], tag[p], val);
+            return ;
+        }
+        push(p);
         int mid = l + r >> 1;
-        sum[p << 1] += lazy[p] * (mid - l + 1);
-        sum[p << 1 | 1] += lazy[p] * (r - mid);
-        lazy[p << 1] += lazy[p];
-        lazy[p << 1 | 1] += lazy[p];
-        lazy[p] = 0;
+        if (ql <= mid) upd(p << 1, l, mid, ql, qr, val);
+        if (mid < qr) upd(p << 1 | 1, mid + 1, r, ql, qr, val);
+        node[p] = node[p << 1] + node[p << 1 | 1];
     }
-}
-void build(int p, int l, int r) {
-    //lazy[p] = sum[p] = 0 注意清空！！！
-    if (l == r) {
-        sum[p] = a[l];
-        return;
+    void upd(int p, int l, int r, int pos, const Info &val) {
+        if (l == r) {
+            node[p] = val;
+            return ;
+        }
+        int mid = l + r >> 1;
+        push(p);
+        if (pos <= mid) upd(p << 1, l, mid, pos, val);
+        else upd(p << 1 | 1, mid + 1, r, pos, val);
+        node[p] = node[p << 1] + node[p << 1 | 1];
     }
-    int mid = l + r >> 1;
-    build(p << 1, l, mid);
-    build(p << 1 | 1, mid + 1, r);
-    push_up(p);
-}
-void update(int p, int l, int r, int ql, int qr, ll val) {
-    if (ql <= l && r <= qr) {
-        sum[p] += val * (r - l + 1);
-        lazy[p] += val;
-        return ;
+    Info qry(int p, int l, int r, int ql, int qr) {
+        if (ql <= l && r <= qr) return node[p];
+        push(p);
+        int mid = l + r >> 1;
+        Info res = Info();
+        if (ql <= mid) res = res + qry(p << 1, l, mid, ql, qr);
+        if (mid < qr) res = res + qry(p << 1 | 1, mid + 1, r, ql, qr);
+        return res;
     }
-    push_down(p, l, r);
-    int mid = l + r >> 1;
-    if (ql <= mid) update(p << 1, l, mid, ql, qr, val);
-    if (mid < qr) update(p << 1 | 1, mid + 1, r, ql, qr, val);
-    push_up(p);
-}
-ll query(int p, int l, int r, int ql, int qr) {
-    if (ql <= l && r <= qr) return sum[p];
-    push_down(p, l, r);
-    int mid = l + r >> 1;
-    ll ans = 0;
-    if (ql <= mid) ans += query(p << 1, l, mid, ql, qr);
-    if (mid < qr) ans += query(p << 1 | 1, mid + 1, r, ql, qr);
-    return ans;
-}
+    Info qry(int p, int l, int r, int pos) {
+        if (l == r) return node[p];
+        push(p);
+        int mid = l + r >> 1;
+        Info res = Info();
+        if (pos <= mid) return qry(p << 1, l, mid, pos);
+        return qry(p << 1 | 1, mid + 1, r, pos);
+    }
+};
 
 
 
