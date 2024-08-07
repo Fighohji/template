@@ -1,10 +1,11 @@
-vector<Nxt> G[maxn];
-bool inStk[maxn];
-int low[maxn], stk[maxn], dfn[maxn], belong[maxn], clk, top, blockCnt;
+vector<Nxt> G[N];
+bool inStk[N];
+int low[N], stk[N], dfn[N], belong[N], clk, top, blockCnt;
 void tarjan(int u, int p) {
-    if (dfn[u]) return ;
+    if (dfn[u]) return;
     low[u] = dfn[u] = ++clk;
-    stk[++top] = u; inStk[u] = 1;
+    stk[++top] = u;
+    inStk[u] = 1;
     for (auto [v, id] : G[u]) {
         if (p == id) continue;
         if (!dfn[v]) {
