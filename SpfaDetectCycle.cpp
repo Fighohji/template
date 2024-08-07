@@ -1,17 +1,16 @@
-struct node
-{
+struct node {
     int v, w;
 };
-vector<node> e[maxn];
-int dis[maxn], vis[maxn];
+vector<node> e[N];
+int dis[N], vis[N];
 
-bool spfa(int n)
-{
+bool spfa(int n) {
     queue<int> q;
     vector<int> pre(n, -1);
     int idx = 0;
 
-    for (int i = 0; i < n; ++i) vis[i] = 0;
+    for (int i = 0; i < n; ++i)
+        vis[i] = 0;
     for (int i = 0; i < n; ++i) {
         q.push(i);
         vis[i] = 1;
@@ -33,7 +32,8 @@ bool spfa(int n)
                         break;
                     }
                 }
-                for (int j : vec) inStack[j] = 0;
+                for (int j : vec)
+                    inStack[j] = 0;
                 vec.clear();
             }
         }
@@ -41,7 +41,8 @@ bool spfa(int n)
     };
 
     while (!q.empty()) {
-        int u = q.front(); q.pop();
+        int u = q.front();
+        q.pop();
         vis[u] = 0;
         for (auto [v, w] : e[u]) {
             if (dis[v] > dis[u] + w) {

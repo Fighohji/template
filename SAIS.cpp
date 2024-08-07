@@ -1,27 +1,25 @@
-int lg[maxn];//初始化
-void init_lg()
-{
-	for(int i=2;i<=maxn;++i)lg[i]=lg[i>>1]+1;
+int lg[N]; // 初始化
+void init_lg() {
+    for (int i = 2; i <= N; ++i)
+        lg[i] = lg[i >> 1] + 1;
 }
-struct SAIS
-{
-    // 后缀类型
-    #define L_TYPE 0
-    #define S_TYPE 1
+struct SAIS {
+// 后缀类型
+#define L_TYPE 0
+#define S_TYPE 1
 
-    int ss[maxn];
-    int rl[maxn],rk[maxn],lcp[maxn];
+    int ss[N];
+    int rl[N], rk[N], lcp[N];
     int n;
-	int st[30][maxn];
-	
+    // int st[30][N];
 
-    void init(const string &s)
-    {
+    void init(const string &s) {
         n = s.size();
-        for (int i=1;i<=n;++i) ss[i] = s[i-1];
+        for (int i = 1; i <= n; ++i)
+            ss[i] = s[i - 1];
         // st中的字符必须调成正数!!!!!!!!!!!!!!
     }
-	
+
     // 判断一个字符是否为LMS字符
 
     inline bool is_lms_char(int *type, int x) {
@@ -31,8 +29,7 @@ struct SAIS
     // 判断两个LMS子串是否相同
     inline bool equal_substring(int *S, int x, int y, int *type) {
         do {
-            if (S[x] != S[y])
-                return false;
+            if (S[x] != S[y]) return false;
             x++, y++;
         } while (!is_lms_char(type, x) && !is_lms_char(type, y));
 
@@ -41,12 +38,12 @@ struct SAIS
 
     // 诱导排序(从*型诱导到L型、从L型诱导到S型)
     // 调用之前应将*型按要求放入SA中
-    inline void induced_sort(int *S, int *SA, int *type, int *bucket, int *lbucket,
-                            int *sbucket, int n, int SIGMA) {
+    inline void induced_sort(int *S, int *SA, int *type, int *bucket,
+                             int *lbucket, int *sbucket, int n, int SIGMA) {
         for (int i = 1; i <= n; i++)
             if (SA[i] > 1 && type[SA[i] - 1] == L_TYPE)
                 SA[lbucket[S[SA[i] - 1]]++] = SA[i] - 1;
-        for (int i = 0; i <= SIGMA; i++)  // Reset S-type bucket
+        for (int i = 0; i <= SIGMA; i++) // Reset S-type bucket
             sbucket[i] = bucket[i];
         for (int i = n; i >= 1; i--)
             if (SA[i] > 1 && type[SA[i] - 1] == S_TYPE)
@@ -57,26 +54,24 @@ struct SAIS
     // S是输入字符串，length是字符串的长度, SIGMA是字符集的大小
     int *sais(int *S, int length, int SIGMA) {
         int n = length;
-        assert(S[n]==0);
-        int *type = new int[n + 5];  // 后缀类型
-        int *position = new int[n + 5];  // 记录LMS子串的起始位置
-        int *name = new int[n + 5];  // 记录每个LMS子串的新名称
-        int *SA = new int[n + 5];  // SA数组
-        int *bucket = new int[SIGMA + 5];  // 每个字符的桶
-        int *lbucket = new int[SIGMA + 5];  // 每个字符的L型桶的起始位置
-        int *sbucket = new int[SIGMA + 5];  // 每个字符的S型桶的起始位置
+        assert(S[n] == 0);
+        int *type = new int[n + 5];       // 后缀类型
+        int *position = new int[n + 5];   // 记录LMS子串的起始位置
+        int *name = new int[n + 5];       // 记录每个LMS子串的新名称
+        int *SA = new int[n + 5];         // SA数组
+        int *bucket = new int[SIGMA + 5]; // 每个字符的桶
+        int *lbucket = new int[SIGMA + 5]; // 每个字符的L型桶的起始位置
+        int *sbucket = new int[SIGMA + 5]; // 每个字符的S型桶的起始位置
 
         // 初始化每个桶
         memset(bucket, 0, sizeof(int) * (SIGMA + 5));
         for (int i = 1; i <= n; i++)
             bucket[S[i]]++;
         for (int i = 0; i <= SIGMA; i++) {
-            if (i==0)
-            {
+            if (i == 0) {
                 bucket[i] = bucket[i];
                 lbucket[i] = 1;
-            }else
-            {
+            } else {
                 bucket[i] += bucket[i - 1];
                 lbucket[i] = bucket[i - 1] + 1;
             }
@@ -96,8 +91,7 @@ struct SAIS
         // 寻找每个LMS子串
         int cnt = 0;
         for (int i = 1; i <= n; i++)
-            if (is_lms_char(type,i))
-                position[++cnt] = i;
+            if (is_lms_char(type, i)) position[++cnt] = i;
         // 对LMS子串进行排序
         fill(SA, SA + n + 3, -1);
         for (int i = 1; i <= cnt; i++)
@@ -106,8 +100,8 @@ struct SAIS
 
         // 为每个LMS子串命名
         fill(name, name + n + 3, -1);
-        int lastx = -1, namecnt = 1;  // 上一次处理的LMS子串与名称的计数
-        bool flag = false;  // 这里顺便记录是否有重复的字符
+        int lastx = -1, namecnt = 1; // 上一次处理的LMS子串与名称的计数
+        bool flag = false; // 这里顺便记录是否有重复的字符
         for (int i = 2; i <= n; i++) {
             int x = SA[i];
 
@@ -115,41 +109,40 @@ struct SAIS
                 if (lastx >= 0 && !equal_substring(S, x, lastx, type))
                     namecnt++;
                 // 因为只有相同的LMS子串才会有同样的名称
-                if (lastx >= 0 && namecnt == name[lastx])
-                    flag = true;
+                if (lastx >= 0 && namecnt == name[lastx]) flag = true;
 
                 name[x] = namecnt;
                 lastx = x;
             }
-        }  // for
+        } // for
         name[n] = 0;
 
         // 生成S1
-        int *S1 = new int[cnt+5];
+        int *S1 = new int[cnt + 5];
         int pos = 0;
         for (int i = 1; i <= n; i++)
-            if (name[i] >= 0)
-                S1[++pos] = name[i];
+            if (name[i] >= 0) S1[++pos] = name[i];
         int *SA1;
         if (!flag) {
             // 直接计算SA1
             SA1 = new int[cnt + 5];
 
             for (int i = 1; i <= cnt; i++)
-                SA1[S1[i]+1] = i;
+                SA1[S1[i] + 1] = i;
         } else
-            SA1 = sais(S1, cnt, namecnt);  // 递归计算SA1
+            SA1 = sais(S1, cnt, namecnt); // 递归计算SA1
 
         // 从SA1诱导到SA
         for (int i = 0; i <= SIGMA; i++) {
-            if (i==0)
+            if (i == 0)
                 lbucket[i] = 1;
             else
                 lbucket[i] = bucket[i - 1] + 1;
             sbucket[i] = bucket[i];
         }
         fill(SA, SA + n + 3, -1);
-        for (int i = cnt; i >= 1; i--)  // 这里是逆序扫描SA1，因为SA中S型桶是倒序的
+        for (int i = cnt; i >= 1;
+             i--) // 这里是逆序扫描SA1，因为SA中S型桶是倒序的
             SA[sbucket[S[position[SA1[i]]]]--] = position[SA1[i]];
         induced_sort(S, SA, type, bucket, lbucket, sbucket, n, SIGMA);
 
@@ -164,40 +157,42 @@ struct SAIS
         return SA;
     }
 
-    void build()
-    {
-        ss[0]=ss[n+2]=-1;
-        ss[n+1]=0;
+    void build() {
+        ss[0] = ss[n + 2] = -1;
+        ss[n + 1] = 0;
         int SIGMA = 0;
-        for (int i=1;i<=n;++i) SIGMA = max(SIGMA,ss[i]);
-        int * sa = sais(ss,n+1,SIGMA);
-        for (int i=2;i<=n+1;++i) rk[sa[i]]=i-1;
+        for (int i = 1; i <= n; ++i)
+            SIGMA = max(SIGMA, ss[i]);
+        int *sa = sais(ss, n + 1, SIGMA);
+        for (int i = 2; i <= n + 1; ++i)
+            rk[sa[i]] = i - 1;
         delete[] sa;
-        for (int i=1;i<=n;++i) rl[rk[i]]=i;
-        for (int i=1,len=0;i<=n;++i)
-        {
+        for (int i = 1; i <= n; ++i)
+            rl[rk[i]] = i;
+        for (int i = 1, len = 0; i <= n; ++i) {
             if (len) --len;
-            while (i+len<=n && rl[rk[i]-1]+len<=n && ss[i+len]==ss[rl[rk[i]-1]+len]) ++len;
-            lcp[rk[i]]=len;
+            while (i + len <= n && rl[rk[i] - 1] + len <= n
+                   && ss[i + len] == ss[rl[rk[i] - 1] + len])
+                ++len;
+            lcp[rk[i]] = len;
         }
     }
 
-	void build_st()
-	{
-		memset(st,0x3f,sizeof st);
-		for(int i=1;i<=n;++i)st[0][i]=lcp[i];
-		for(int i=0;i<20;++i)
-			for(int j=1;j<=n;++j)
-				st[i+1][j]=min(st[i][j],st[i][min(j+(1<<i),n)]);
-	}
-	int query(int l,int r)
-	{
-		int L=l,R=r;
-		l=min(rk[L],rk[R])+1,r=max(rk[L],rk[R]);
-		int t=lg[r-l+1];
-		return min(st[t][l],st[t][r-(1<<t)+1]);
-	}
+    // void build_st() {
+    //     memset(st, 0x3f, sizeof st);
+    //     for (int i = 1; i <= n; ++i)
+    //         st[0][i] = lcp[i];
+    //     for (int i = 0; i < 20; ++i)
+    //         for (int j = 1; j <= n; ++j)
+    //             st[i + 1][j] = min(st[i][j], st[i][min(j + (1 << i), n)]);
+    // }
+    // int query(int l, int r) {
+    //     int L = l, R = r;
+    //     l = min(rk[L], rk[R]) + 1, r = max(rk[L], rk[R]);
+    //     int t = lg[r - l + 1];
+    //     return min(st[t][l], st[t][r - (1 << t) + 1]);
+    // }
 
-    #undef L_TYPE
-    #undef R_TYPE
-}sa;
+#undef L_TYPE
+#undef R_TYPE
+} sa;

@@ -1,8 +1,7 @@
 map<vector<int>, int> hssym;
 map<int, bool> issym;
 int idx;
-int dfs(int u, int p, vector<vector<int> > &e)
-{
+int dfs(int u, int p, vector<vector<int>> &e) {
     vector<int> tmp;
     for (auto v : e[u]) {
         if (v == p) continue;

@@ -1,11 +1,11 @@
-struct PAM { //在PAM上走能走出所有回文子串
-    int sz; // 状态数
-    int tot; //字符串长度
-    int last; //上一个状态
-    int len[maxn]; //对应状态的回文串的长度
-    int link[maxn]; //对应的最长回文后缀状态
-    int nxt[maxn][26]; //转移边
-    char s[maxn]; //字符串
+struct PAM {             // 在PAM上走能走出所有回文子串
+    int sz;              // 状态数
+    int tot;             // 字符串长度
+    int last;            // 上一个状态
+    int len[N];       // 对应状态的回文串的长度
+    int link[N];      // 对应的最长回文后缀状态
+    int nxt[N][26];   // 转移边
+    char s[N];        // 字符串
     int newNode(int l) { // 建立一个新节点，长度为 l
         ++sz;
         len[sz] = l;
@@ -14,16 +14,17 @@ struct PAM { //在PAM上走能走出所有回文子串
         memset(nxt[sz], 0, sizeof(nxt[sz]));
         return sz;
     }
-    void init() { //初始化
+    void init() { // 初始化
         sz = -1;
         last = 0;
         s[tot = 0] = '$';
-        newNode(0); //偶根
-        newNode(-1); //奇根
+        newNode(0);  // 偶根
+        newNode(-1); // 奇根
         link[0] = 1;
     }
     int getPrev(int x) { // 找后缀回文
-        while (s[tot - len[x] - 1] != s[tot]) x = link[x];
+        while (s[tot - len[x] - 1] != s[tot])
+            x = link[x];
         return x;
     }
     void insert(char c) {

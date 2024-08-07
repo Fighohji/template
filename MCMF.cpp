@@ -7,11 +7,11 @@ struct MCMF {
     };
     int n, m, s, t;
     vector<E> edges;
-    vector<int> G[maxn];
-    bool inq[maxn];
-    ll dis[maxn], pre[maxn], a[maxn];
+    vector<int> G[N];
+    bool inq[N];
+    ll dis[N], pre[N], a[N];
     void init(int _n, int _s, int _t) {
-        n = _n; s = _s; t = _t;
+        n = _n, s = _s, t = _t;
         for (int i = 0; i <= n; i++)
             G[i].clear();
         edges.clear();
@@ -30,12 +30,14 @@ struct MCMF {
             inq[i] = false;
         }
         dis[s] = 0, a[s] = LINF, inq[s] = true;
-        queue<int> Q; Q.push(s);
+        queue<int> Q;
+        Q.push(s);
         while (!Q.empty()) {
-            int u = Q.front(); Q.pop();
+            int u = Q.front();
+            Q.pop();
             inq[u] = false;
-            for (int& idx: G[u]) {
-                E& e = edges[idx];
+            for (int &idx : G[u]) {
+                E &e = edges[idx];
                 if (e.cap && dis[e.to] > dis[u] + e.v) {
                     dis[e.to] = dis[u] + e.v;
                     pre[e.to] = idx;
@@ -63,4 +65,4 @@ struct MCMF {
         }
         return cost;
     }
-}flow;
+} flow;

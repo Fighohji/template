@@ -1,6 +1,6 @@
-bool is_prime[maxn];
-int phi[maxn];
-int prime[maxn];
+bool is_prime[N];
+int phi[N];
+int prime[N];
 void pre() {
     for (int i = 1; i <= 5000000; i++) {
         is_prime[i] = 1;
