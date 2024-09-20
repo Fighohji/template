@@ -187,7 +187,22 @@ Polygon andrew(Polygon s) // 安德鲁算法构建凸包
         l.push_back(u[i]);
     return l;
 }
-
+// 旋转卡壳，要保证是个凸包
+double get_longest(Polygon &p, int n) {
+    double Ans = 0;
+    Point v;
+    int cur = 1;
+    for (int i = 0; i < n; ++i) {
+        v = p[i] - p[(i + 1) % n];
+        while (cross(v, (p[(cur + 1) % n] - p[cur])) < 0)
+            cur = (cur + 1) % n;
+        double tmp = (getDistance(p[i], p[cur]));
+        if (tmp > Ans) { Ans = tmp; }
+        tmp = getDistance(p[(i + 1) % n], p[(cur + 1) % n]);
+        if (tmp > Ans) Ans = tmp;
+    }
+    return Ans;
+}
 // 动态凸包
 Point basic;
 set<Point> s;

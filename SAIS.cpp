@@ -10,6 +10,7 @@ struct SAIS {
 
     int ss[N];
     int rl[N], rk[N], lcp[N];
+    // ss是字符串，rk是每一个后缀在排序之后的排名，rl[i]表示第i个排名的数是第几个,lcp[i]也就是height, 是排名第i的后缀和第i-1的后缀的lcp
     int n;
     // int st[30][N];
 
@@ -178,6 +179,7 @@ struct SAIS {
         }
     }
 
+    // 倍增求区间lcp
     // void build_st() {
     //     memset(st, 0x3f, sizeof st);
     //     for (int i = 1; i <= n; ++i)

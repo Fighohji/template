@@ -1,3 +1,4 @@
+// z[i] = lcp(s, s[i...n - 1])
 vector<int> z_function(string s) {
     int n = (int)s.length();
     vector<int> z(n);

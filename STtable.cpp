@@ -3,7 +3,7 @@ struct STTable {
     vector<vector<int>> st_min;
     vector<int> lg;
 
-    void build_st(int n, const vector<int> &a) {
+    STTable(int n, const vector<int> &a) {
         lg.resize(n + 1);
         int LG = 1;
         while ((1 << LG) < n)
